@@ -1,3 +1,4 @@
+from io import BytesIO
 import aiohttp
 import lightbulb
 import hikari
@@ -18,6 +19,14 @@ class CrescentBot(lightbulb.BotApp):
 
     async def on_close(self,  _: hikari.StoppedEvent) -> None:
         await self.session.close()
-        await self.close()
+        
+
+    async def make_guild_icon(self, icon_url: str):
+        """helper function to make a guild icon url into bytes"""
+        async with self.session.get(f"{icon_url}") as resp:
+            image = BytesIO(await resp.read())
+
+        return image
+
 
     
