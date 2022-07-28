@@ -1,0 +1,23 @@
+import aiohttp
+import lightbulb
+import hikari
+from dotenv import load_dotenv
+import os
+
+load_dotenv()
+
+class CrescentBot(lightbulb.BotApp):
+    def __init__(self):
+        super().__init__(token=os.environ['TOKEN'], intents=hikari.Intents.ALL, prefix="c!")
+        self.subscribe(hikari.StartedEvent, self.on_start)
+
+    async def on_start(self, _: hikari.StartedEvent) -> None:
+        self.session = aiohttp.ClientSession()
+
+        self.load_extensions_from('modules')
+
+    async def on_close(self,  _: hikari.StoppedEvent) -> None:
+        await self.session.close()
+        await self.close()
+
+    
