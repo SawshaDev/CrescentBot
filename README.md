@@ -1,2 +1,2 @@
 # Crescent
-a multipurpose discord bot made for your server!
+A multipurpose discord bot made using hikari and hikari-lightbulb
