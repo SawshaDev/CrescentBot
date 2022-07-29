@@ -14,7 +14,7 @@ class CrescentBot(lightbulb.BotApp):
 
     async def on_start(self, _: hikari.StartedEvent) -> None:
         self.session = aiohttp.ClientSession()
-
+        self.load_extensions("lightbulb.ext.filament.exts.superuser")
         self.load_extensions_from('modules')
 
     async def on_close(self,  _: hikari.StoppedEvent) -> None:
@@ -28,5 +28,10 @@ class CrescentBot(lightbulb.BotApp):
 
         return image
 
+    async def make_user_avatar(self, icon_url: str):
+        """Helper function to make a user's avatar"""
 
-    
+        async with self.session.get(f"{icon_url}") as resp:
+            image = BytesIO(await resp.read())
+
+        return image
