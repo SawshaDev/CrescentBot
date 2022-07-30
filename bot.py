@@ -21,16 +21,8 @@ class CrescentBot(lightbulb.BotApp):
         await self.session.close()
         
 
-    async def make_guild_icon(self, icon_url: str):
+    async def make_icon(self, icon_url: str):
         """helper function to make a guild icon url into bytes"""
-        async with self.session.get(f"{icon_url}") as resp:
-            image = BytesIO(await resp.read())
-
-        return image
-
-    async def make_user_avatar(self, icon_url: str):
-        """Helper function to make a user's avatar"""
-
         async with self.session.get(f"{icon_url}") as resp:
             image = BytesIO(await resp.read())
 

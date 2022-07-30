@@ -7,15 +7,18 @@ import utils
 from lightbulb.ext import tasks
 import miru
 
+
 info = utils.Plugin("info", "everything info wise")
 
 class SelectStuff(miru.Select):
     def __init__(self, ctx: miru.Context, member: hikari.Member):
         self.ctx = ctx
         self.member = member
+        self.embed = hikari.Embed()
 
         options = [
             miru.SelectOption(label="avatar"),
+            miru.SelectOption(label="banner"),
             miru.SelectOption(label="close", emoji=f"\N{BLACK SQUARE FOR STOP}")
         ]
         super().__init__(placeholder="Choose userinfo", options=options)
@@ -26,15 +29,20 @@ class SelectStuff(miru.Select):
                 if isinstance(item, miru.Select):
                     item.disabled=True
 
-            await ctx.edit_response(components=self.view.build())
-            await ctx.respond("Closed select")
+            await ctx.edit_response("Closed the selects! in order to ",components=self.view.build())
 
         if self.values[0] == "avatar":
-            embed = hikari.Embed()
-            embed.set_image(self.member.avatar_url)
+            self.embed.set_image(self.member.avatar_url)
 
-            return await ctx.edit_response(embed=embed, components=ctx.view.build())
+            return await ctx.edit_response(embed=self.embed, components=ctx.view.build())
 
+
+        if self.values[0] == "banner":
+            user = await ctx.app.rest.fetch_user(self.member)
+            print(user.banner_url)
+            
+            self.embed.set_image(user.banner_url)
+            return await ctx.edit_response(embed=self.embed, components=ctx.view.build())
 
 class BasicView(miru.View):
     def __init__(self, ctx, member: hikari.Member):
@@ -52,8 +60,10 @@ async def userinfo(ctx: utils.SlashContext, user: hikari.Member):
     user = user or ctx.member
     view = BasicView(ctx, user)  # Create an instance of our newly created BasicView
 
-    message = await ctx.respond(
-        "This is a basic component menu built with miru!", components=view.build()
+    embed = hikari.Embed(description=f"Info about {user.mention}")
+
+    message = await ctx.respond(embed=embed,
+        components=view.build()
     )
     view.start(await message.message())  # Start listening for interactions
 
@@ -76,7 +86,7 @@ async def serverinfo(ctx: utils.SlashContext, guild=None):
         await ctx.respond(f"I do not have access to the guild: {guild}!")
 
 
-    guild_icon = await ctx.bot.make_guild_icon(guild.icon_url)
+    guild_icon = await ctx.bot.make_icon(guild.icon_url)
     
     
     
