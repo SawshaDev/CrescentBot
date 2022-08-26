@@ -1,7 +1,7 @@
 import hikari
 import lightbulb
 import utils
-from bot import CrescentBot
+from core.bot import CrescentBot
 
 owner = utils.Plugin("owner", "owner only commands")
 
@@ -20,3 +20,7 @@ async def reload(ctx: utils.PrefixContext, module):
 
 def load(bot: CrescentBot):
     bot.add_plugin(owner)
+
+
+def unload(bot: CrescentBot):
+    bot.remove_plugin(owner)
